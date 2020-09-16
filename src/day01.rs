@@ -6,29 +6,29 @@ use crate::input;
 use std::collections::HashSet;
 
 struct Day {
-    frequencies: Vec<i32>,
+    changes: Vec<i32>,
 }
 
 impl Day {
     fn read() -> Self {
-        let mut frequencies: Vec<i32> = Vec::new();
+        let mut changes: Vec<i32> = Vec::new();
         loop {
             let line = input::read_line();
             if line.is_empty() {
                 break;
             }
-            frequencies.push(input::string_to_i32(&line));
+            changes.push(input::string_to_i32(&line));
         }
-        Day { frequencies }
+        Day { changes }
     }
 
     fn part01(&self) -> i32 {
-        self.frequencies.iter().sum()
+        self.changes.iter().sum()
     }
 
     fn part02(&self) -> i32 {
         let mut freq = 0;
-        let mut it = self.frequencies.iter().cycle();
+        let mut it = self.changes.iter().cycle();
         let mut seen_freqs = HashSet::new();
         loop {
             let change = it.next().expect("cyclic iterator exhausted (WTH?)");
