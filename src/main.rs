@@ -6,6 +6,7 @@ mod input;
 fn solve_day(day_part: &str) {
     match day_part {
         "1.1" => println!("Your answer is: {:?}", day01::part01()),
+        "1.2" => println!("Your answer is: {:?}", day01::part02()),
         _ => println!("🤷🏻‍♂️"),
     }
 }
