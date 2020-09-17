@@ -37,6 +37,20 @@ impl Day {
         }
         twice * thrice
     }
+
+    fn part02(&self) -> String {
+        for (pos, id1) in self.box_ids.iter().enumerate() {
+            for id2 in self.box_ids[pos..].iter() {
+                if id1 == id2 {
+                    continue;
+                }
+                if let Some(common) = find_common_chars(id1, id2) {
+                    return common;
+                }
+            }
+        }
+        "❌".to_string()
+    }
 }
 
 fn count_letters(id: &str) -> HashMap<char, i32> {
@@ -47,8 +61,28 @@ fn count_letters(id: &str) -> HashMap<char, i32> {
     letter_counts
 }
 
+fn find_common_chars(id1: &str, id2: &str) -> Option<String> {
+    let mut common = String::from("");
+    let mut differ = false;
+    for (l1, l2) in id1.chars().zip(id2.chars()) {
+        if l1 != l2 {
+            if differ {
+                return None;
+            }
+            differ = true;
+            continue;
+        }
+        common.push(l1);
+    }
+    Some(common)
+}
+
 pub fn part01() -> i32 {
     Day::read().part01()
+}
+
+pub fn part02() -> String {
+    Day::read().part02()
 }
 
 #[cfg(test)]
@@ -92,6 +126,24 @@ mod tests {
         ]),
     }
 
+    macro_rules! test_find_common_chars {
+        ($($name:ident: $values:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let (id1, id2, expected) = $values;
+                    assert_eq!(expected, find_common_chars(id1, id2));
+                }
+            )*
+        }
+    }
+
+    test_find_common_chars! {
+        test_find_common_chars_01: ("asdf", "asdf", Some("asdf".to_string())),
+        test_find_common_chars_02: ("xsdf", "asdf", Some("sdf".to_string())),
+        test_find_common_chars_03: ("xxdf", "asdf", None),
+    }
+
     macro_rules! test_parts {
         ($($name:ident: $values:expr,)*) => {
             $(
@@ -114,5 +166,14 @@ mod tests {
         test_part01_05: (Day::part01, vec![
             "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
         ], 12),
+        test_part02_01: (Day::part02, vec![
+            "abc", "aaa", "aab", "bbb", "bbc",
+        ], "bc"),
+        test_part02_02: (Day::part02, vec![
+            "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
+        ], "abcde"),
+        test_part02_03: (Day::part02, vec![
+            "abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz",
+        ], "fgij"),
     }
 }
