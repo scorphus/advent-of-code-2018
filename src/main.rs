@@ -4,6 +4,11 @@ mod day01;
 mod day02;
 mod input;
 
+fn main() {
+    let day_part = env::args().nth(1).expect("missing <day>.<part> (e.g. 1.1)");
+    solve_day(&day_part);
+}
+
 fn solve_day(day_part: &str) {
     println!(
         "Your answer is: {}",
@@ -15,9 +20,4 @@ fn solve_day(day_part: &str) {
             _ => "🤷".to_string(),
         }
     )
-}
-
-fn main() {
-    let day_part = env::args().nth(1).expect("missing <day>.<part> (e.g. 1.1)");
-    solve_day(&day_part);
 }

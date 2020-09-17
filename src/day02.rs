@@ -3,6 +3,14 @@ use crate::input;
 
 use std::collections::HashMap;
 
+pub fn part01() -> i32 {
+    Day::read().part01()
+}
+
+pub fn part02() -> String {
+    Day::read().part02()
+}
+
 struct Day {
     box_ids: Vec<String>,
 }
@@ -75,14 +83,6 @@ fn find_common_chars(id1: &str, id2: &str) -> Option<String> {
         common.push(l1);
     }
     Some(common)
-}
-
-pub fn part01() -> i32 {
-    Day::read().part01()
-}
-
-pub fn part02() -> String {
-    Day::read().part02()
 }
 
 #[cfg(test)]

@@ -5,6 +5,14 @@ use crate::input;
 
 use std::collections::HashSet;
 
+pub fn part01() -> i32 {
+    Day::read().part01()
+}
+
+pub fn part02() -> i32 {
+    Day::read().part02()
+}
+
 struct Day {
     changes: Vec<i32>,
 }
@@ -40,14 +48,6 @@ impl Day {
             seen_freqs.insert(freq);
         }
     }
-}
-
-pub fn part01() -> i32 {
-    Day::read().part01()
-}
-
-pub fn part02() -> i32 {
-    Day::read().part02()
 }
 
 #[cfg(test)]
