@@ -11,6 +11,10 @@ pub fn part01() -> i32 {
     Day::read().part01()
 }
 
+pub fn part02() -> i32 {
+    Day::read().part02()
+}
+
 #[derive(Debug)]
 struct Day {
     claims: Vec<Claim>,
@@ -39,14 +43,7 @@ impl Day {
     }
 
     fn part01(&self) -> i32 {
-        let mut square_inches: HashMap<(i32, i32), i32> = HashMap::new();
-        for claim in self.claims.iter() {
-            for w in claim.left..(claim.left + claim.width) {
-                for h in claim.top..(claim.top + claim.height) {
-                    *square_inches.entry((w, h)).or_insert(0) += 1;
-                }
-            }
-        }
+        let square_inches = self.collect_square_inches();
         let mut total = 0;
         for (_, count) in square_inches.iter() {
             if count > &1 {
@@ -54,6 +51,33 @@ impl Day {
             }
         }
         total
+    }
+
+    fn collect_square_inches(&self) -> HashMap<(i32, i32), i32> {
+        let mut square_inches = HashMap::new();
+        for claim in self.claims.iter() {
+            for w in claim.left..(claim.left + claim.width) {
+                for h in claim.top..(claim.top + claim.height) {
+                    *square_inches.entry((w, h)).or_insert(0) += 1;
+                }
+            }
+        }
+        square_inches
+    }
+
+    fn part02(&self) -> i32 {
+        let square_inches = self.collect_square_inches();
+        'claims: for claim in self.claims.iter() {
+            for w in claim.left..(claim.left + claim.width) {
+                for h in claim.top..(claim.top + claim.height) {
+                    if square_inches[&(w, h)] > 1 {
+                        continue 'claims;
+                    }
+                }
+            }
+            return claim.id;
+        }
+        -1
     }
 }
 
@@ -125,5 +149,23 @@ mod tests {
         test_part01_04: (Day::part01, vec![
             "#1 @ 0,0: 20x20", "#2 @ 15,10: 5x10", "#3 @ 10,10: 5x5"
         ], 75),
+        test_part02_01: (Day::part02, vec![
+            "#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2"
+        ], 3),
+        test_part02_02: (Day::part02, vec![
+            "#1 @ 0,0: 20x20", "#2 @ 20,20: 5x10", "#3 @ 25,30: 5x5"
+        ], 1),
+        test_part02_03: (Day::part02, vec![
+            "#1 @ 0,0: 20x20", "#2 @ 15,10: 5x10", "#3 @ 20,20: 5x5"
+        ], 3),
+        test_part02_04: (Day::part02, vec![
+            "#1 @ 0,0: 20x20", "#2 @ 20,20: 5x10", "#3 @ 20,20: 5x5"
+        ], 1),
+        test_part02_05: (Day::part02, vec![
+            "#1 @ 0,0: 20x20", "#2 @ 15,10: 5x10", "#3 @ 15,15: 5x5"
+        ], -1),
+        test_part02_06: (Day::part02, vec![
+            "#1 @ 0,0: 20x20", "#2 @ 15,10: 5x10", "#3 @ 10,10: 5x5"
+        ], -1),
     }
 }
