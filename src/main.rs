@@ -8,6 +8,7 @@ use std::env;
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 mod input;
 
 fn main() {
@@ -23,6 +24,7 @@ fn solve_day(day_part: &str) {
         "2.2" => day02::part02(),
         "3.1" => day03::part01().to_string(),
         "3.2" => day03::part02().to_string(),
+        "4.1" => day04::part01().to_string(),
         _ => "🤷".to_string(),
     };
     copy_to_clipboard(&answer);
