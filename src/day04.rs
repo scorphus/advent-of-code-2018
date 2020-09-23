@@ -11,6 +11,10 @@ pub fn part01() -> i32 {
     Day::read().part01()
 }
 
+pub fn part02() -> i32 {
+    Day::read().part02()
+}
+
 #[derive(Debug)]
 struct Day {
     records: Vec<Record>,
@@ -53,6 +57,24 @@ impl Day {
         let (guard_id, (_, minutes)) = stats
             .iter()
             .max_by(|(_, a), (_, b)| a.0.cmp(&b.0))
+            .expect("❌");
+        let (minute, _) = minutes
+            .iter()
+            .enumerate()
+            .max_by(|(_, a), (_, b)| a.cmp(&b))
+            .expect("❌");
+        guard_id * minute as i32
+    }
+
+    fn part02(&self) -> i32 {
+        let stats = self.collect_stats();
+        let (guard_id, (_, minutes)) = stats
+            .iter()
+            .max_by(|(_, (_, a)), (_, (_, b))| {
+                a.iter()
+                    .max_by(|a, b| a.cmp(&b))
+                    .cmp(&b.iter().max_by(|a, b| a.cmp(&b)))
+            })
             .expect("❌");
         let (minute, _) = minutes
             .iter()
@@ -186,5 +208,24 @@ mod tests {
             "[1518-11-05 00:45] falls asleep",
             "[1518-11-05 00:55] wakes up",
         ], 240),
+        test_part02_01: (Day::part02, vec![
+            "[1518-11-01 00:00] Guard #10 begins shift",
+            "[1518-11-01 00:05] falls asleep",
+            "[1518-11-01 00:25] wakes up",
+            "[1518-11-01 00:30] falls asleep",
+            "[1518-11-01 00:55] wakes up",
+            "[1518-11-01 23:58] Guard #99 begins shift",
+            "[1518-11-02 00:40] falls asleep",
+            "[1518-11-02 00:50] wakes up",
+            "[1518-11-03 00:05] Guard #10 begins shift",
+            "[1518-11-03 00:24] falls asleep",
+            "[1518-11-03 00:29] wakes up",
+            "[1518-11-04 00:02] Guard #99 begins shift",
+            "[1518-11-04 00:36] falls asleep",
+            "[1518-11-04 00:46] wakes up",
+            "[1518-11-05 00:03] Guard #99 begins shift",
+            "[1518-11-05 00:45] falls asleep",
+            "[1518-11-05 00:55] wakes up",
+        ], 4455),
     }
 }
