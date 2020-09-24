@@ -57,7 +57,7 @@ impl Day {
                 }
             }
         }
-        "❌".to_string()
+        panic!("❌");
     }
 }
 
