@@ -17,15 +17,16 @@ fn main() {
 }
 
 fn solve_day(day_part: &str) {
+    let lines = input::read_lines();
     let answer = match day_part {
-        "1.1" => day01::part01().to_string(),
-        "1.2" => day01::part02().to_string(),
-        "2.1" => day02::part01().to_string(),
-        "2.2" => day02::part02(),
-        "3.1" => day03::part01().to_string(),
-        "3.2" => day03::part02().to_string(),
-        "4.1" => day04::part01().to_string(),
-        "4.2" => day04::part02().to_string(),
+        "1.1" => day01::part01(&lines).to_string(),
+        "1.2" => day01::part02(&lines).to_string(),
+        "2.1" => day02::part01(&lines).to_string(),
+        "2.2" => day02::part02(&lines),
+        "3.1" => day03::part01(&lines).to_string(),
+        "3.2" => day03::part02(&lines).to_string(),
+        "4.1" => day04::part01(&lines).to_string(),
+        "4.2" => day04::part02(&lines).to_string(),
         _ => "🤷".to_string(),
     };
     copy_to_clipboard(&answer);

@@ -1,9 +1,7 @@
-use std::io;
+use std::io::{self, BufRead};
 
-pub fn read_line() -> String {
-    let mut line = String::new();
-    io::stdin().read_line(&mut line).expect("read error");
-    line.trim_end().to_string()
+pub fn read_lines() -> Vec<String> {
+    io::stdin().lock().lines().map(|l| l.expect("read error")).collect()
 }
 
 pub fn string_to_i32(string: &str) -> i32 {

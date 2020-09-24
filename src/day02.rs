@@ -1,14 +1,12 @@
 /// # Day 02 (https://adventofcode.com/2018/day/2)
-use crate::input;
-
 use std::collections::HashMap;
 
-pub fn part01() -> i32 {
-    Day::read().part01()
+pub fn part01<T: AsRef<str>>(lines: &[T]) -> i32 {
+    Day::read_from(lines).part01()
 }
 
-pub fn part02() -> String {
-    Day::read().part02()
+pub fn part02<T: AsRef<str>>(lines: &[T]) -> String {
+    Day::read_from(lines).part02()
 }
 
 struct Day {
@@ -16,16 +14,10 @@ struct Day {
 }
 
 impl Day {
-    fn read() -> Self {
-        let mut box_ids: Vec<String> = Vec::new();
-        loop {
-            let line = input::read_line();
-            if line.is_empty() {
-                break;
-            }
-            box_ids.push(line);
+    fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
+        Day {
+            box_ids: lines.iter().map(|l| l.as_ref().to_string()).collect(),
         }
-        Day { box_ids }
     }
 
     fn part01(&self) -> i32 {
@@ -149,31 +141,51 @@ mod tests {
             $(
                 #[test]
                 fn $name() {
-                    let (method, box_ids_str, expected) = $values;
-                    let box_ids = box_ids_str.iter().map(|e| e.to_string()).collect();
-                    assert_eq!(expected, method(&Day{ box_ids }));
+                    let (method, box_ids, expected) = $values;
+                    assert_eq!(expected, method(&box_ids));
                 }
             )*
         }
     }
 
     test_parts! {
-        test_part01_02: (Day::part01, vec![""], 0),
-        test_part01_03: (Day::part01, vec!["aa"], 0),
-        test_part01_04: (Day::part01, vec![
+        test_part01_01: (part01, vec![""], 0),
+        test_part01_02: (part01, vec!["aa"], 0),
+        test_part01_03: (part01, vec![
             "aa", "bb", "aaa", "bbb", "a", "ab", "abc",
         ], 4),
-        test_part01_05: (Day::part01, vec![
+        test_part01_04: (part01, vec![
             "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
         ], 12),
-        test_part02_01: (Day::part02, vec![
+        test_part02_01: (part02, vec![
+            "aa", "bb", "aaa", "bbb", "a", "ab", "abc",
+        ], "aa"),
+        test_part02_02: (part02, vec![
             "abc", "aaa", "aab", "bbb", "bbc",
         ], "bc"),
-        test_part02_02: (Day::part02, vec![
+        test_part02_03: (part02, vec![
             "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
         ], "abcde"),
-        test_part02_03: (Day::part02, vec![
+        test_part02_04: (part02, vec![
             "abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz",
         ], "fgij"),
+    }
+
+    macro_rules! test_part02_panics {
+        ($($name:ident: $box_ids:expr,)*) => {
+            $(
+                #[test]
+                #[should_panic]
+                fn $name() {
+                    part02($box_ids);
+                }
+            )*
+        }
+    }
+
+    test_part02_panics! {
+        test_part02_panics_01: &[""],
+        test_part02_panics_02: &["aa"],
+        test_part02_panics_03: &["abc", "def"],
     }
 }

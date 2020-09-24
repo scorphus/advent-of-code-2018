@@ -3,19 +3,16 @@ extern crate text_io;
 
 use text_io::scan;
 
-use crate::input;
-
 use std::collections::HashMap;
 
-pub fn part01() -> i32 {
-    Day::read().part01()
+pub fn part01<T: AsRef<str>>(lines: &[T]) -> i32 {
+    Day::read_from(lines).part01()
 }
 
-pub fn part02() -> i32 {
-    Day::read().part02()
+pub fn part02<T: AsRef<str>>(lines: &[T]) -> i32 {
+    Day::read_from(lines).part02()
 }
 
-#[derive(Debug)]
 struct Day {
     records: Vec<Record>,
 }
@@ -38,16 +35,8 @@ enum Event {
 }
 
 impl Day {
-    fn read() -> Self {
-        let mut records = Vec::new();
-        loop {
-            let line = input::read_line();
-            if line.is_empty() {
-                break;
-            }
-            let record = parse_record(&line);
-            records.push(record);
-        }
+    fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
+        let mut records: Vec<Record> = lines.iter().map(|l| parse_record(l.as_ref())).collect();
         records.sort();
         Day { records }
     }
@@ -181,15 +170,14 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (method, records, expected) = $values;
-                    let records = records.iter().map(|c| parse_record(c)).collect();
-                    assert_eq!(expected, method(&Day{ records }));
+                    assert_eq!(expected, method(&records));
                 }
             )*
         }
     }
 
     test_parts! {
-        test_part01_01: (Day::part01, vec![
+        test_part01_01: (part01, vec![
             "[1518-11-01 00:00] Guard #10 begins shift",
             "[1518-11-01 00:05] falls asleep",
             "[1518-11-01 00:25] wakes up",
@@ -208,7 +196,7 @@ mod tests {
             "[1518-11-05 00:45] falls asleep",
             "[1518-11-05 00:55] wakes up",
         ], 240),
-        test_part02_01: (Day::part02, vec![
+        test_part02_01: (part02, vec![
             "[1518-11-01 00:00] Guard #10 begins shift",
             "[1518-11-01 00:05] falls asleep",
             "[1518-11-01 00:25] wakes up",
