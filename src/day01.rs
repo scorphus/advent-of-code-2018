@@ -54,7 +54,7 @@ impl Day {
 mod tests {
     use super::*;
 
-    macro_rules! test_day {
+    macro_rules! test_parts {
         ($($name:ident: $values:expr,)*) => {
             $(
                 #[test]
@@ -66,7 +66,7 @@ mod tests {
         }
     }
 
-    test_day! {
+    test_parts! {
         test_part01_01: (Day::part01, vec![1, -2, 3, 1], 3),
         test_part01_02: (Day::part01, vec![1, 1, 1], 3),
         test_part01_03: (Day::part01, vec![1, 1, -2], 0),
