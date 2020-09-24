@@ -1,6 +1,12 @@
 setup:
+	@rustup component add rustfmt
+	@rustup component add clippy
 	@cargo install grcov
 	@echo "Install lcov using your package manager of choice"
+	@type -p pre-commit >/dev/null 2>&1 || \
+		(echo "Please install pre-commit and try again"; exit 1)
+	@pre-commit install -f --hook-type pre-commit
+	@pre-commit install -f --hook-type pre-push
 
 coverage: export CARGO_INCREMENTAL := 0
 coverage: export RUSTFLAGS := -Zprofile -Ccodegen-units=1 -Copt-level=0 \

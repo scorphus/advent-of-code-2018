@@ -1,0 +1,41 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: check-json
+      - id: check-vcs-permalinks
+      - id: trailing-whitespace
+        types: [non-executable, file, text]
+        exclude_types: [markdown]
+      - id: mixed-line-ending
+      - id: end-of-file-fixer
+        types: [non-executable, file, text]
+        exclude_types: [markdown]
+  - repo: meta
+    hooks:
+      - id: check-useless-excludes
+  - repo: local
+    hooks:
+      - id: fmt
+        name: fmt
+        language: system
+        types: [file, rust]
+        entry: cd 2018 && cargo fmt -- --check
+        pass_filenames: false
+      - id: clippy
+        name: clippy
+        language: system
+        types: [file, rust]
+        entry: cd 2018 && cargo clippy --all --all-targets --all-features --bins --examples --tests -- -D warnings
+        pass_filenames: false
+      - id: test
+        name: test
+        language: system
+        types: [file, rust]
+        entry: cd 2018 && cargo test
+        pass_filenames: false
+        stages: [push]
