@@ -15,6 +15,8 @@ fmt:
 clippy:
 	@cargo clippy --all --all-targets --all-features --bins --examples --tests -- -D warnings
 
+lint: fmt clippy
+
 test:
 	@rm -rf target
 	@cargo test -vv

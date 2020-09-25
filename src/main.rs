@@ -10,6 +10,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 mod input;
 
 fn main() {
@@ -30,6 +31,7 @@ fn solve_day(day_part: &str) {
         "4.2" => day04::part02(&lines).to_string(),
         "5.1" => day05::part01(&lines).to_string(),
         "5.2" => day05::part02(&lines).to_string(),
+        "6.1" => day06::part01(&lines).to_string(),
         _ => "🤷".to_string(),
     };
     copy_to_clipboard(&answer);
