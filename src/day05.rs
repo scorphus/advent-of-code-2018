@@ -4,13 +4,19 @@ pub fn part01<T: AsRef<str>>(lines: &[T]) -> i32 {
 }
 
 struct Day {
-    polymer: Vec<char>,
+    polymer: Vec<i8>,
 }
 
 impl Day {
     fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
         Day {
-            polymer: lines.first().expect("❌").as_ref().chars().collect(),
+            polymer: lines
+                .first()
+                .expect("❌")
+                .as_ref()
+                .chars()
+                .map(|c| c as i8)
+                .collect(),
         }
     }
 
@@ -18,9 +24,9 @@ impl Day {
         let react = 'a' as i8 - 'A' as i8;
         self.polymer
             .iter()
-            .fold(vec![], |mut polymer, &unit| {
+            .fold(vec![], |mut polymer: Vec<i8>, &unit| {
                 match polymer.last() {
-                    Some(&last) if (last as i8 - unit as i8).abs() == react => {
+                    Some(&last) if (last - unit).abs() == react => {
                         polymer.pop();
                     }
                     _ => polymer.push(unit),
