@@ -24,21 +24,21 @@ repos:
         name: fmt
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && cargo fmt -- --check'
+        entry: bash -c 'cd 2018 && make fmt'
         pass_filenames: false
         files: ^2018/
       - id: clippy
         name: clippy
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && cargo clippy --all --all-targets --all-features --bins --examples --tests -- -D warnings'
+        entry: bash -c 'cd 2018 && make clippy'
         pass_filenames: false
         files: ^2018/
       - id: test
         name: test
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && cargo test'
+        entry: bash -c 'cd 2018 && make test'
         pass_filenames: false
         files: ^2018/
         stages: [push]

@@ -8,6 +8,17 @@ setup:
 	@pre-commit install -f --hook-type pre-commit
 	@pre-commit install -f --hook-type pre-push
 
+fmt:
+	@pwd
+	@cargo fmt -- --verbose
+
+clippy:
+	@cargo clippy --all --all-targets --all-features --bins --examples --tests -- -D warnings
+
+test:
+	@rm -rf target
+	@cargo test -vv
+
 coverage: export CARGO_INCREMENTAL := 0
 coverage: export RUSTFLAGS := -Zprofile -Ccodegen-units=1 -Copt-level=0 \
 	-Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
