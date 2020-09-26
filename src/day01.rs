@@ -57,7 +57,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (method, changes, expected) = $values;
-                    assert_eq!(expected, method(&changes));
+                    assert_eq!(method(&changes), expected);
                 }
             )*
         }

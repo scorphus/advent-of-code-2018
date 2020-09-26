@@ -88,7 +88,7 @@ mod tests {
                 fn $name() {
                     let (id, expected) = $values;
                     let expected_map: HashMap<_, _> = expected.into_iter().collect();
-                    assert_eq!(expected_map, count_letters(id));
+                    assert_eq!(count_letters(id), expected_map);
                 }
             )*
         }
@@ -124,7 +124,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (id1, id2, expected) = $values;
-                    assert_eq!(expected, find_common_chars(id1, id2));
+                    assert_eq!(find_common_chars(id1, id2), expected);
                 }
             )*
         }
@@ -142,7 +142,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (method, box_ids, expected) = $values;
-                    assert_eq!(expected, method(&box_ids));
+                    assert_eq!(method(&box_ids), expected);
                 }
             )*
         }

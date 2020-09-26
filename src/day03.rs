@@ -94,7 +94,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (claim, expected) = $values;
-                    assert_eq!(expected, parse_claim(claim));
+                    assert_eq!(parse_claim(claim), expected);
                 }
             )*
         }
@@ -121,7 +121,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (method, claims, expected) = $values;
-                    assert_eq!(expected, method(&claims));
+                    assert_eq!(method(&claims), expected);
                 }
             )*
         }

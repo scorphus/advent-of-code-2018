@@ -113,7 +113,7 @@ mod tests {
                 #[test]
                 fn $name() {
                     let (method, coords, expected) = $values;
-                    assert_eq!(expected, method(&coords));
+                    assert_eq!(method(&coords), expected);
                 }
             )*
         }
