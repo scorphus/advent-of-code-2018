@@ -35,6 +35,7 @@ fn solve_day(day_part: &str) {
         "6.1" => day06::part01(&lines).to_string(),
         "6.2" => day06::part02(&lines).to_string(),
         "7.1" => day07::part01(&lines),
+        "7.2" => day07::part02(&lines).to_string(),
         _ => "🤷".to_string(),
     };
     copy_to_clipboard(&answer);
