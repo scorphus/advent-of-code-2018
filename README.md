@@ -1,4 +1,4 @@
-# 🎄 Advent of Code 2018
+# 🎄 Advent of Code 2018 [![Build Status][build-badge]][action-link]
 
 Solutions to [Advent of Code 2018] in [Rust] 🦀
 
@@ -15,6 +15,8 @@ License (BSD-3-Clause).
 
 See [LICENSE] for details.
 
+[build-badge]: https://github.com/scorphus/advent-of-code-2018/workflows/Rust/badge.svg
+[action-link]: https://github.com/scorphus/advent-of-code-2018/actions?query=workflow%3ARust
 [Advent of Code 2018]: https://adventofcode.com/
 [Rust]: https://rust-lang.org/
 [LICENSE]: LICENSE
