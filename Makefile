@@ -21,14 +21,16 @@ test:
 	@rm -rf target
 	@cargo test -vv
 
-coverage: export CARGO_INCREMENTAL := 0
-coverage: export RUSTFLAGS := -Zprofile -Ccodegen-units=1 -Copt-level=0 \
+_coverage: export CARGO_INCREMENTAL := 0
+_coverage: export RUSTFLAGS := -Zprofile -Ccodegen-units=1 -Copt-level=0 \
 	-Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
-coverage: export RUSTDOCFLAGS := -Cpanic=abort
-coverage:
+_coverage: export RUSTDOCFLAGS := -Cpanic=abort
+_coverage:
 	@rm -rf target
 	@cargo build
 	@cargo test
+
+coverage: _coverage
 	@grcov ./target/debug/ -s . -t html --llvm --branch --ignore-not-existing \
 		-o ./target/debug/grcov/
 	@grcov ./target/debug/ -s . -t lcov --llvm --branch --ignore-not-existing \
@@ -38,3 +40,8 @@ coverage:
 		--ignore-errors source --legend ./target/debug/lcov.src.info > /dev/null
 	@echo "grcov: file://$$(pwd)/target/debug/grcov/src/index.html"
 	@echo "lcov: file://$$(pwd)/target/debug/lcov/src/index.html"
+
+coverage-ci: _coverage
+	@zip -0 ./target/debug/ccov.zip `find . \( -name "advent_of_code_2018*.gc*" \) -print`
+	@grcov ./target/debug/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing \
+		--ignore "/*" -o ./target/debug/lcov.info

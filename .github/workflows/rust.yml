@@ -6,16 +6,23 @@ on:
     branches: [main]
 env:
   CARGO_TERM_COLOR: always
+  RUSTC_BOOTSTRAP: 1
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: deps
-        run: sudo apt install libxcb-shape0-dev libxcb-xfixes0-dev
+        run: sudo apt install lcov libxcb-shape0-dev libxcb-xfixes0-dev
       - name: fmt
         run: make fmt
       - name: clippy
         run: make clippy
       - name: test
         run: make test
+      - name: more deps
+        run: cargo install grcov
+      - name: coverage
+        run: make coverage-ci
+      - name: codecov
+        run: bash <(curl -s https://codecov.io/bash) -f target/debug/lcov.info
