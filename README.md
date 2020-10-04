@@ -19,6 +19,6 @@ See [LICENSE] for details.
 [action-link]: https://github.com/scorphus/advent-of-code-2018/actions?query=workflow%3ARust
 [codecov-badge]: https://codecov.io/gh/scorphus/advent-of-code-2018/branch/main/graph/badge.svg
 [codecov-link]: https://codecov.io/gh/scorphus/advent-of-code-2018
-[advent of code 2018]: https://adventofcode.com/
+[advent of code 2018]: https://adventofcode.com/2018
 [rust]: https://rust-lang.org/
 [license]: LICENSE
