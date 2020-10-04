@@ -24,21 +24,18 @@ repos:
         name: fmt
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && make fmt'
+        entry: make fmt
         pass_filenames: false
-        files: ^2018/
       - id: clippy
         name: clippy
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && make clippy'
+        entry: make clippy
         pass_filenames: false
-        files: ^2018/
       - id: test
         name: test
         language: system
         types: [file, rust]
-        entry: bash -c 'cd 2018 && make test'
+        entry: make test
         pass_filenames: false
-        files: ^2018/
         stages: [push]
