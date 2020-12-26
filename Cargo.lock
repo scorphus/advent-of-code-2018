@@ -5,6 +5,7 @@ name = "advent_of_code_2018"
 version = "0.1.0"
 dependencies = [
  "clipboard",
+ "paste",
  "text_io",
 ]
 
@@ -94,6 +95,12 @@ checksum = "c92d4ddb4bd7b50d730c215ff871754d0da6b2178849f8a2a2ab69712d0c073b"
 dependencies = [
  "objc",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c5d65c4d95931acda4498f675e332fcbdc9a06705cd07086c510e9b6009cd1c1"
 
 [[package]]
 name = "text_io"
