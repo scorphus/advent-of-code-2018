@@ -57,3 +57,14 @@ new-day-%:
 	@sed -i.tmp s/XX/$$(echo $*+0 | bc)/g src/day$*.rs
 	@rm src/day$*.rs.tmp
 .PHONY: new-day-X
+
+download-next-day:
+	@$(MAKE) download-day-$$(for f in data/day*; do \
+		echo $$(basename -s.rs $$f | sed s/day//) + 1 | bc; \
+	done | sort -n | tail -1)
+.PHONY: download-next-day
+
+download-day-%:
+	@rm -f data/day$$(printf "%02d" $*) > /dev/null
+	@aoc-cli d -y 2018 -d $* -f data/day$$(printf "%02d" $*)
+.PHONY: download-day-X
