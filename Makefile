@@ -68,3 +68,13 @@ download-day-%:
 	@rm -f data/day$$(printf "%02d" $*) > /dev/null
 	@aoc-cli d -y 2018 -d $* -f data/day$$(printf "%02d" $*)
 .PHONY: download-day-X
+
+submit-part-%:
+	@$(MAKE) submit-day.part-$$(for f in data/day*; do \
+		echo $$(basename -s.rs $$f | sed s/day//) + 0 | bc; \
+	done | sort -n | tail -1).$*
+.PHONY: submit-part-Y
+
+submit-day.part-%:
+	@aoc-cli s -y 2018 -d $$(echo $* | cut -d. -f1) $$(echo $* | cut -d. -f2) $$(pbpaste)
+.PHONY: submit-day.part-X.Y
