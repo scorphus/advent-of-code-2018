@@ -1,4 +1,4 @@
-/// # Day 05 (https://adventofcode.com/2018/day/5)
+/// Day 5 (https://adventofcode.com/2018/day/5)
 const REACT: i8 = 'a' as i8 - 'A' as i8;
 
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> i32 {

@@ -1,4 +1,4 @@
-/// # Day 01 (https://adventofcode.com/2018/day/1)
+/// Day 1 (https://adventofcode.com/2018/day/1)
 /// Super easy day. Actually solved part 1 on my terminal, with Fish (❤️🐠🐚):
 /// »»»» string join "+ " < data/day01 | math
 use crate::input;

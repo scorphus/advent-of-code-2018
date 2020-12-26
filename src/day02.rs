@@ -1,4 +1,4 @@
-/// # Day 02 (https://adventofcode.com/2018/day/2)
+/// Day 2 (https://adventofcode.com/2018/day/2)
 use std::collections::HashMap;
 
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> i32 {

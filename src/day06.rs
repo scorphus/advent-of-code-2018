@@ -1,4 +1,4 @@
-/// # Day 06 (https://adventofcode.com/2018/day/6)
+/// Day 6 (https://adventofcode.com/2018/day/6)
 use crate::input;
 
 use std::collections::HashMap;

@@ -1,4 +1,4 @@
-/// # Day 03 (https://adventofcode.com/2018/day/3)
+/// Day 3 (https://adventofcode.com/2018/day/3)
 extern crate text_io;
 
 use text_io::scan;
