@@ -45,3 +45,15 @@ coverage-ci: _coverage
 	@zip -0 ./target/debug/ccov.zip `find . \( -name "advent_of_code_2018*.gc*" \) -print`
 	@grcov ./target/debug/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing \
 		--ignore "/*" -o ./target/debug/lcov.info
+
+next-day:
+	@$(MAKE) new-day-$$(printf "%02d" $$(for f in src/day*; do \
+		echo $$(basename -s.rs $$f | sed s/day//) + 1 | bc; \
+	done | sort -n | tail -1))
+.PHONY: next-day
+
+new-day-%:
+	@cp day.rs.sample src/day$*.rs
+	@sed -i.tmp s/XX/$$(echo $*+0 | bc)/g src/day$*.rs
+	@rm src/day$*.rs.tmp
+.PHONY: new-day-X
