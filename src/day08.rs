@@ -51,8 +51,7 @@ impl Node {
     }
 
     fn all_meta_sum(&self) -> i32 {
-        let children: i32 = self.children.iter().map(|c| c.all_meta_sum()).sum();
-        children + self.meta_sum()
+        self.meta_sum() + self.children.iter().map(|c| c.all_meta_sum()).sum::<i32>()
     }
 
     fn value(&self) -> i32 {
