@@ -106,8 +106,9 @@ mod tests {
         }
     }
 
+    const LINE: &str = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
     test_parts! {
-        test_part01_01: (part01, vec!["2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2"], 138),
-        test_part02_01: (part02, vec!["2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2"], 66),
+        test_part01_01: (part01, vec![LINE], 138),
+        test_part02_01: (part02, vec![LINE], 66),
     }
 }
