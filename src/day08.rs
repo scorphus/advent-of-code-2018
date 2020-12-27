@@ -19,7 +19,6 @@ struct Day {
 struct Node {
     children: Vec<Node>,
     meta: Vec<i32>,
-    size: usize,
 }
 
 impl Day {
@@ -72,22 +71,28 @@ impl Node {
     }
 }
 
-fn parse_nodes(numbers: &[i32]) -> Option<Node> {
-    let mut node = Node {
-        size: 2,
-        ..Node::default()
+fn parse_nodes(v: &[i32]) -> Option<Node> {
+    let (root, _) = parse_nodes_recurse(v)?;
+    Some(root)
+}
+
+fn parse_nodes_recurse(v: &[i32]) -> Option<(Node, &[i32])> {
+    let mut node = Node::default();
+    let (chi, met, mut tail) = match v {
+        [c, m, t @ ..] => (c, m, t),
+        _ => panic!("❌"),
     };
-    for _ in 0..numbers[0] {
-        let child = parse_nodes(&numbers[node.size..])?;
-        node.size += child.size;
+    for _ in 0..*chi {
+        let (child, new_tail) = parse_nodes_recurse(tail)?;
+        tail = new_tail;
         node.children.push(child);
     }
-    for _ in 0..numbers[1] {
-        let meta = numbers.get(node.size)?;
+    for _ in 0..*met {
+        let (meta, new_tail) = tail.split_first()?;
+        tail = new_tail;
         node.meta.push(*meta);
-        node.size += 1;
     }
-    Some(node)
+    Some((node, tail))
 }
 
 #[cfg(test)]
@@ -110,5 +115,11 @@ mod tests {
     test_parts! {
         test_part01_01: (part01, vec![LINE], 138),
         test_part02_01: (part02, vec![LINE], 66),
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_parse_nodes_panics() {
+        parse_nodes(&[2, 3, 0, 3, 10, 11, 12, 1, 1, 0]);
     }
 }
