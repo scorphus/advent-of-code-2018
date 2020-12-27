@@ -46,12 +46,12 @@ impl Day {
 }
 
 impl Node {
-    fn meta_sum(&self) -> i32 {
-        self.meta.iter().sum()
-    }
-
     fn all_meta_sum(&self) -> i32 {
         self.meta_sum() + self.children.iter().map(|c| c.all_meta_sum()).sum::<i32>()
+    }
+
+    fn meta_sum(&self) -> i32 {
+        self.meta.iter().sum()
     }
 
     fn value(&self) -> i32 {
