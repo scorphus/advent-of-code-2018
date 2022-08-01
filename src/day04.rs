@@ -50,7 +50,7 @@ impl Day {
         let (minute, _) = minutes
             .iter()
             .enumerate()
-            .max_by(|(_, a), (_, b)| a.cmp(&b))
+            .max_by(|(_, a), (_, b)| a.cmp(b))
             .expect("❌");
         guard_id * minute as i32
     }
@@ -61,14 +61,14 @@ impl Day {
             .iter()
             .max_by(|(_, (_, a)), (_, (_, b))| {
                 a.iter()
-                    .max_by(|a, b| a.cmp(&b))
-                    .cmp(&b.iter().max_by(|a, b| a.cmp(&b)))
+                    .max_by(|a, b| a.cmp(b))
+                    .cmp(&b.iter().max_by(|a, b| a.cmp(b)))
             })
             .expect("❌");
         let (minute, _) = minutes
             .iter()
             .enumerate()
-            .max_by(|(_, a), (_, b)| a.cmp(&b))
+            .max_by(|(_, a), (_, b)| a.cmp(b))
             .expect("❌");
         guard_id * minute as i32
     }
