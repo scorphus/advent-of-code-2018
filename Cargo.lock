@@ -106,9 +106,9 @@ checksum = "0c520e05135d6e763148b6426a837e239041653ba7becd2e538c076c738025fc"
 
 [[package]]
 name = "text_io"
-version = "0.1.9"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee74b5019b48991b09803402aaf9e65a053b3993fe9d9c475ab67a395358ba76"
+checksum = "d5f0c8eb2ad70c12a6a69508f499b3051c924f4b1cfeae85bfad96e6bc5bba46"
 
 [[package]]
 name = "winapi"
