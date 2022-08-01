@@ -96,7 +96,7 @@ impl Day {
 }
 
 fn parse_coords(string: &str) -> (i32, i32) {
-    let mut it = string.split(", ").map(|n| input::string_to_i32(n));
+    let mut it = string.split(", ").map(input::string_to_i32);
     (it.next().expect("❌"), it.next().expect("❌"))
 }
 

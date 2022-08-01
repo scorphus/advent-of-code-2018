@@ -28,7 +28,7 @@ impl Day {
             .expect("❌")
             .as_ref()
             .split(' ')
-            .map(|s| input::string_to_i32(s))
+            .map(input::string_to_i32)
             .collect();
         Day {
             root: parse_nodes(&numbers).expect("❌"),
