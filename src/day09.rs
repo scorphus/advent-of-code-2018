@@ -29,31 +29,17 @@ impl Day {
     }
 
     fn part01(&self) -> usize {
-        let mut scores = vec![0; self.players];
-        let mut circle = vec![0];
-        let mut current = 0;
-        for marble in 1..=self.marble {
-            if marble % 23 == 0 {
-                let remove_index = if current > 7 {
-                    current - 7
-                } else {
-                    circle.len() + current - 7
-                };
-                let removed = circle.remove(remove_index);
-                scores[marble % self.players] += marble + removed;
-                current = remove_index % circle.len();
-            } else {
-                current = (current + 2) % circle.len();
-                circle.insert(current, marble);
-            }
-        }
-        scores.iter().cloned().max().expect("❌")
+        self.find_winning_score(self.marble)
     }
 
     fn part02(&self) -> usize {
+        self.find_winning_score(self.marble * 100)
+    }
+
+    fn find_winning_score(&self, marbles: usize) -> usize {
         let mut scores = vec![0; self.players];
         let mut circle: VecDeque<_> = [0].into();
-        for marble in 1..=self.marble * 100 {
+        for marble in 1..=marbles {
             if marble % 23 == 0 {
                 circle.rotate_right(7);
                 scores[marble % self.players] += marble + circle.pop_back().expect("❌");
