@@ -148,6 +148,7 @@ mod tests {
         }
     }
 
+    #[rustfmt::skip]
     test_parts! {
         test_part01_01: (part01, vec![
             "position=< 9,  1> velocity=< 0,  2>",

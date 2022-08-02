@@ -6,11 +6,16 @@ use clipboard::ClipboardProvider;
 
 use std::env;
 
-macro_rules! mod_days {($($day:tt)*) => (::paste::paste! {
-    $(mod [<day$day>];)*
-})}
-
-mod_days! {01 02 03 04 05 06 07 08 09 10}
+mod day01;
+mod day02;
+mod day03;
+mod day04;
+mod day05;
+mod day06;
+mod day07;
+mod day08;
+mod day09;
+mod day10;
 
 mod input;
 
