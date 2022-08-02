@@ -10,7 +10,7 @@ macro_rules! mod_days {($($day:tt)*) => (::paste::paste! {
     $(mod [<day$day>];)*
 })}
 
-mod_days! {01 02 03 04 05 06 07 08 09}
+mod_days! {01 02 03 04 05 06 07 08 09 10}
 
 mod input;
 
@@ -30,7 +30,7 @@ fn solve_day(day_part: &str) {
             _ => panic!("🤷"),
         }
     })}
-    let answer = get_answer!(01 02 03 04 05 06 07 08 09);
+    let answer = get_answer!(01 02 03 04 05 06 07 08 09 10);
     copy_to_clipboard(&answer);
     println!("Your answer is: {} (already copied to clipboard)", answer)
 }
