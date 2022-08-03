@@ -11,6 +11,8 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> String {
     format!("{},{}", x, y)
 }
 
+type Cell = (isize, isize);
+
 #[derive(Debug, Default)]
 struct Day {
     grid_serial_number: isize,
@@ -23,12 +25,18 @@ impl Day {
         }
     }
 
-    fn part01(&self) -> (isize, isize) {
-        (self.grid_serial_number, self.grid_serial_number)
+    fn power_level(&self, (x, y): Cell) -> isize {
+        let rack_id = x + 10;
+        let power_level = rack_id * y + self.grid_serial_number;
+        power_level * rack_id / 100 % 10 - 5
     }
 
-    fn part02(&self) -> (isize, isize) {
-        (self.grid_serial_number, self.grid_serial_number)
+    fn part01(&self) -> Cell {
+        (self.grid_serial_number, self.power_level((179, 359)))
+    }
+
+    fn part02(&self) -> Cell {
+        (self.grid_serial_number, self.power_level((179, 359)))
     }
 }
 
@@ -49,7 +57,27 @@ mod tests {
     }
 
     test_parts! {
-        test_part01_01: (part01, vec!["18"], "18,18"),
-        test_part02_01: (part02, vec!["42"], "42,42"),
+        test_part01_01: (part01, vec!["18"], "18,-3"),
+        test_part02_01: (part02, vec!["42"], "42,2"),
+    }
+
+    macro_rules! test_power_level {
+        ($($name:ident: $values:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let (cell, grid_serial_number, expected) = $values;
+                    let day = Day { grid_serial_number };
+                    assert_eq!(day.power_level(cell), expected);
+                }
+            )*
+        }
+    }
+
+    test_power_level! {
+        test_power_level_01: ((3, 5), 8, 4),
+        test_power_level_02: ((122,79), 57, -5),
+        test_power_level_03: ((217,196), 39, 0),
+        test_power_level_04: ((101,153), 71, 4),
     }
 }
