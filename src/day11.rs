@@ -10,8 +10,8 @@ pub fn part01<T: AsRef<str>>(lines: &[T]) -> String {
 }
 
 pub fn part02<T: AsRef<str>>(lines: &[T]) -> String {
-    let (x, y) = Day::read_from(lines).part02();
-    format!("{},{}", x, y)
+    let ((x, y), size) = Day::read_from(lines).part02();
+    format!("{},{},{}", x, y, size)
 }
 
 type Cell = (usize, usize);
@@ -50,25 +50,40 @@ impl Day {
     }
 
     fn part01(&self) -> Cell {
-        let mut max_power_level = isize::MIN;
+        self.largest_total_power_square(SQUARE_SIZE).0
+    }
+
+    fn part02(&self) -> (Cell, usize) {
         let mut max_cell = (0, 0);
-        for x in SQUARE_SIZE..=GRID_SIZE - SQUARE_SIZE {
-            for y in SQUARE_SIZE..=GRID_SIZE - SQUARE_SIZE {
+        let mut max_power_level = isize::MIN;
+        let mut max_size = 0;
+        for size in 1..=GRID_SIZE {
+            let (cell, power_level) = self.largest_total_power_square(size);
+            if power_level > max_power_level {
+                max_cell = cell;
+                max_power_level = power_level;
+                max_size = size;
+            }
+        }
+        (max_cell, max_size)
+    }
+
+    fn largest_total_power_square(&self, square_size: usize) -> (Cell, isize) {
+        let mut max_cell = (0, 0);
+        let mut max_power_level = isize::MIN;
+        for x in square_size..=GRID_SIZE - square_size {
+            for y in square_size..=GRID_SIZE - square_size {
                 let power_level = self.prefixed_power_levels[x][y]
-                    - self.prefixed_power_levels[x][y + SQUARE_SIZE]
-                    - self.prefixed_power_levels[x + SQUARE_SIZE][y]
-                    + self.prefixed_power_levels[x + SQUARE_SIZE][y + SQUARE_SIZE];
+                    - self.prefixed_power_levels[x][y + square_size]
+                    - self.prefixed_power_levels[x + square_size][y]
+                    + self.prefixed_power_levels[x + square_size][y + square_size];
                 if power_level > max_power_level {
                     max_power_level = power_level;
                     max_cell = (x, y);
                 }
             }
         }
-        max_cell
-    }
-
-    fn part02(&self) -> Cell {
-        (0, 0)
+        (max_cell, max_power_level)
     }
 }
 
@@ -91,6 +106,8 @@ mod tests {
     test_parts! {
         test_part01_01: (part01, vec!["18"], "33,45"),
         test_part01_02: (part01, vec!["42"], "21,61"),
+        test_part02_01: (part02, vec!["18"], "90,269,16"),
+        test_part02_02: (part02, vec!["42"], "232,251,12"),
     }
 
     macro_rules! test_power_level {
