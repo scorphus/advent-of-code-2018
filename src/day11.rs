@@ -1,10 +1,8 @@
 /// Day 11 (https://adventofcode.com/2018/day/11)
 extern crate text_io;
 
-use std::collections::HashMap;
-
-const GRID_SIZE: isize = 300;
-const SQUARE_SIZE: isize = 3;
+const GRID_SIZE: usize = 300;
+const SQUARE_SIZE: usize = 3;
 
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> String {
     let (x, y) = Day::read_from(lines).part01();
@@ -16,49 +14,50 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> String {
     format!("{},{}", x, y)
 }
 
-type Cell = (isize, isize);
+type Cell = (usize, usize);
 
 #[derive(Debug, Default)]
 struct Day {
     grid_serial_number: isize,
-    power_levels: HashMap<Cell, isize>,
+    prefixed_power_levels: Vec<Vec<isize>>,
 }
 
 impl Day {
     fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
         let mut day = Day {
             grid_serial_number: lines.first().expect("❌").as_ref().parse().expect("❌"),
-            ..Default::default()
+            prefixed_power_levels: vec![vec![0; GRID_SIZE + 2]; GRID_SIZE + 2],
         };
-        day.fill_power_levels();
+        day.fill_prefixed_power_levels();
         day
     }
 
-    fn fill_power_levels(&mut self) {
-        for x in 1..=GRID_SIZE {
-            for y in 1..=GRID_SIZE {
-                self.power_levels.insert((x, y), self.power_level((x, y)));
+    fn fill_prefixed_power_levels(&mut self) {
+        for x in (1..=GRID_SIZE).rev() {
+            for y in (1..=GRID_SIZE).rev() {
+                self.prefixed_power_levels[x][y] = self.power_level((x, y))
+                    + self.prefixed_power_levels[x][y + 1]
+                    + self.prefixed_power_levels[x + 1][y]
+                    - self.prefixed_power_levels[x + 1][y + 1];
             }
         }
     }
 
     fn power_level(&self, (x, y): Cell) -> isize {
-        let rack_id = x + 10;
-        let power_level = rack_id * y + self.grid_serial_number;
+        let rack_id = x as isize + 10;
+        let power_level = rack_id * y as isize + self.grid_serial_number;
         power_level * rack_id / 100 % 10 - 5
     }
 
     fn part01(&self) -> Cell {
         let mut max_power_level = isize::MIN;
         let mut max_cell = (0, 0);
-        for x in 1..=GRID_SIZE - SQUARE_SIZE {
-            for y in 1..=GRID_SIZE - SQUARE_SIZE {
-                let mut power_level = 0;
-                for dx in 0..SQUARE_SIZE {
-                    for dy in 0..SQUARE_SIZE {
-                        power_level += self.power_levels[&(x + dx, y + dy)];
-                    }
-                }
+        for x in SQUARE_SIZE..=GRID_SIZE - SQUARE_SIZE {
+            for y in SQUARE_SIZE..=GRID_SIZE - SQUARE_SIZE {
+                let power_level = self.prefixed_power_levels[x][y]
+                    - self.prefixed_power_levels[x][y + SQUARE_SIZE]
+                    - self.prefixed_power_levels[x + SQUARE_SIZE][y]
+                    + self.prefixed_power_levels[x + SQUARE_SIZE][y + SQUARE_SIZE];
                 if power_level > max_power_level {
                     max_power_level = power_level;
                     max_cell = (x, y);
@@ -69,7 +68,7 @@ impl Day {
     }
 
     fn part02(&self) -> Cell {
-        (self.grid_serial_number, self.power_level((179, 359)))
+        (0, 0)
     }
 }
 
@@ -114,25 +113,29 @@ mod tests {
         test_power_level_04: ((101,153), 71, 4),
     }
 
-    macro_rules! test_fill_power_levels {
+    macro_rules! test_fill_prefixed_power_levels {
         ($($name:ident: $values:expr,)*) => {
             $(
                 #[test]
                 fn $name() {
-                    let (cell, grid_serial_number, expected) = $values;
-                    let mut day = Day { grid_serial_number, ..Default::default() };
-                    day.fill_power_levels();
-                    assert_eq!(day.power_levels.len(), (GRID_SIZE * GRID_SIZE) as usize);
-                    assert_eq!(day.power_levels[&cell], expected);
+                    let ((x, y), grid_serial_number, expected) = $values;
+                    let mut day = Day {
+                        grid_serial_number,
+                        prefixed_power_levels: vec![vec![0; GRID_SIZE + 2]; GRID_SIZE + 2],
+                    };
+                    day.fill_prefixed_power_levels();
+                    let total_power = day.prefixed_power_levels[x][y]
+                        - day.prefixed_power_levels[x][y + SQUARE_SIZE]
+                        - day.prefixed_power_levels[x + SQUARE_SIZE][y]
+                        + day.prefixed_power_levels[x + SQUARE_SIZE][y + SQUARE_SIZE];
+                    assert_eq!(total_power, expected);
                 }
             )*
         }
     }
 
-    test_fill_power_levels! {
-        test_fill_power_levels_01: ((3, 5), 8, 4),
-        test_fill_power_levels_02: ((122,79), 57, -5),
-        test_fill_power_levels_03: ((217,196), 39, 0),
-        test_fill_power_levels_04: ((101,153), 71, 4),
+    test_fill_prefixed_power_levels! {
+        test_fill_prefixed_power_levels_01: ((33,45), 18, 29),
+        test_fill_prefixed_power_levels_02: ((21,61), 42, 30),
     }
 }
