@@ -4,6 +4,7 @@ extern crate text_io;
 use std::collections::HashMap;
 
 const GRID_SIZE: isize = 300;
+const SQUARE_SIZE: isize = 3;
 
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> String {
     let (x, y) = Day::read_from(lines).part01();
@@ -29,11 +30,11 @@ impl Day {
             grid_serial_number: lines.first().expect("❌").as_ref().parse().expect("❌"),
             ..Default::default()
         };
-        day.update_power_levels();
+        day.fill_power_levels();
         day
     }
 
-    fn update_power_levels(&mut self) {
+    fn fill_power_levels(&mut self) {
         for x in 1..=GRID_SIZE {
             for y in 1..=GRID_SIZE {
                 self.power_levels.insert((x, y), self.power_level((x, y)));
@@ -48,7 +49,23 @@ impl Day {
     }
 
     fn part01(&self) -> Cell {
-        (self.grid_serial_number, self.power_level((179, 359)))
+        let mut max_power_level = isize::MIN;
+        let mut max_cell = (0, 0);
+        for x in 1..=GRID_SIZE - SQUARE_SIZE {
+            for y in 1..=GRID_SIZE - SQUARE_SIZE {
+                let mut power_level = 0;
+                for dx in 0..SQUARE_SIZE {
+                    for dy in 0..SQUARE_SIZE {
+                        power_level += self.power_levels[&(x + dx, y + dy)];
+                    }
+                }
+                if power_level > max_power_level {
+                    max_power_level = power_level;
+                    max_cell = (x, y);
+                }
+            }
+        }
+        max_cell
     }
 
     fn part02(&self) -> Cell {
@@ -73,8 +90,8 @@ mod tests {
     }
 
     test_parts! {
-        test_part01_01: (part01, vec!["18"], "18,-3"),
-        test_part02_01: (part02, vec!["42"], "42,2"),
+        test_part01_01: (part01, vec!["18"], "33,45"),
+        test_part01_02: (part01, vec!["42"], "21,61"),
     }
 
     macro_rules! test_power_level {
@@ -97,14 +114,14 @@ mod tests {
         test_power_level_04: ((101,153), 71, 4),
     }
 
-    macro_rules! test_fill_grid {
+    macro_rules! test_fill_power_levels {
         ($($name:ident: $values:expr,)*) => {
             $(
                 #[test]
                 fn $name() {
                     let (cell, grid_serial_number, expected) = $values;
                     let mut day = Day { grid_serial_number, ..Default::default() };
-                    day.update_power_levels();
+                    day.fill_power_levels();
                     assert_eq!(day.power_levels.len(), (GRID_SIZE * GRID_SIZE) as usize);
                     assert_eq!(day.power_levels[&cell], expected);
                 }
@@ -112,10 +129,10 @@ mod tests {
         }
     }
 
-    test_fill_grid! {
-        test_fill_grid_01: ((3, 5), 8, 4),
-        test_fill_grid_02: ((122,79), 57, -5),
-        test_fill_grid_03: ((217,196), 39, 0),
-        test_fill_grid_04: ((101,153), 71, 4),
+    test_fill_power_levels! {
+        test_fill_power_levels_01: ((3, 5), 8, 4),
+        test_fill_power_levels_02: ((122,79), 57, -5),
+        test_fill_power_levels_03: ((217,196), 39, 0),
+        test_fill_power_levels_04: ((101,153), 71, 4),
     }
 }
