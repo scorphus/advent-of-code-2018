@@ -13,6 +13,7 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> isize {
 struct Day {
     state: Vec<isize>,
     notes: Vec<isize>,
+    prepend_count: isize,
 }
 
 impl Day {
@@ -30,6 +31,7 @@ impl Day {
                 .map(|c| (c == '#') as isize)
                 .collect(),
             notes: vec![0; 32],
+            prepend_count: 0,
         };
         lines_iter.next();
         for line in lines_iter {
@@ -51,17 +53,45 @@ impl Day {
         day
     }
 
-    fn part01(&self) -> isize {
-        println!("{:?}", self.state);
-        println!("{:?}", self.notes);
-
-        0
+    fn part01(&mut self) -> isize {
+        for _ in 0..20 {
+            self.step();
+        }
+        self.sum_indexes()
     }
 
     fn part02(&self) -> isize {
         println!("{:?}", self.state);
         println!("{:?}", self.notes);
         0
+    }
+
+    fn step(&mut self) {
+        let mut new_state = Vec::new();
+        let mut index = 0;
+        self.prepend_count += 2;
+        for pot in self.state.iter() {
+            index = ((index << 1) & 31) | pot;
+            let value = self.notes[index as usize];
+            if !new_state.is_empty() || value == 1 {
+                new_state.push(value);
+            } else {
+                self.prepend_count -= 1;
+            }
+        }
+        for _ in 0..5 {
+            index = (index << 1) & 31;
+            new_state.push(self.notes[index as usize]);
+        }
+        self.state = new_state;
+    }
+
+    fn sum_indexes(&self) -> isize {
+        self.state
+            .iter()
+            .enumerate()
+            .map(|(i, pot)| (i as isize - self.prepend_count) * pot)
+            .sum()
     }
 }
 
@@ -99,7 +129,7 @@ mod tests {
             "###.. => #",
             "###.# => #",
             "####. => #",
-        ], 0),
+        ], 325),
         test_part02_01: (part02, vec![
             "initial state: #..#.#..##......###...###",
             "",
