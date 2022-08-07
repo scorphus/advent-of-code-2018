@@ -60,10 +60,11 @@ impl Day {
         self.sum_indexes()
     }
 
-    fn part02(&self) -> isize {
-        println!("{:?}", self.state);
-        println!("{:?}", self.notes);
-        0
+    fn part02(&mut self) -> isize {
+        for _ in 0..500 {
+            self.step();
+        }
+        self.sum_indexes() * 100_000_000
     }
 
     fn step(&mut self) {
@@ -147,6 +148,6 @@ mod tests {
             "###.. => #",
             "###.# => #",
             "####. => #",
-        ], 0),
+        ], 937_400_000_000),
     }
 }
