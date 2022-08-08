@@ -4,6 +4,7 @@ extern crate text_io;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> String {
     let (x, y) = Day::read_from(lines).part01();
@@ -19,6 +20,7 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> String {
 struct Day {
     tracks: HashMap<Location, char>,
     carts: BinaryHeap<Cart>,
+    occupied: HashSet<Location>,
 }
 
 type Location = (usize, usize);
@@ -29,6 +31,7 @@ struct Cart {
     y: usize,
     vx: isize,
     vy: isize,
+    intersection_count: usize,
 }
 
 impl Ord for Cart {
@@ -66,15 +69,36 @@ impl Day {
         };
         self.tracks.insert((x, y), new_c);
         if new_c != c {
-            self.carts.push(Cart { x, y, vx, vy });
+            self.carts.push(Cart {
+                x,
+                y,
+                vx,
+                vy,
+                ..Default::default()
+            });
+            self.occupied.insert((x, y));
         }
     }
 
     fn part01(&mut self) -> Location {
-        for cart in &self.carts {
-            println!("{},{},{},{}", cart.x, cart.y, cart.vx, cart.vy);
+        loop {
+            let mut new_carts = BinaryHeap::new();
+            while let Some(mut cart) = self.carts.pop() {
+                self.occupied.remove(&(cart.x, cart.y));
+                cart.step();
+                if self.occupied.contains(&(cart.x, cart.y)) {
+                    return (cart.x, cart.y);
+                }
+                let track_section = self.tracks.get(&(cart.x, cart.y)).expect("❌");
+                match track_section {
+                    '|' | '-' => (),
+                    &track_section => cart.turn(track_section),
+                }
+                self.occupied.insert((cart.x, cart.y));
+                new_carts.push(cart);
+            }
+            self.carts = new_carts;
         }
-        (0, 0)
     }
 
     fn part02(&mut self) -> Location {
@@ -82,6 +106,38 @@ impl Day {
             println!("{},{},{},{}", cart.x, cart.y, cart.vx, cart.vy);
         }
         (0, 0)
+    }
+}
+
+impl Cart {
+    fn step(&mut self) {
+        self.x = (self.x as isize + self.vx) as usize;
+        self.y = (self.y as isize + self.vy) as usize;
+    }
+
+    fn turn(&mut self, track_section: char) {
+        match (track_section, self.vx) {
+            ('/', 0) => self.turn_right(),
+            ('/', _) => self.turn_left(),
+            ('\\', 0) => self.turn_left(),
+            ('\\', _) => self.turn_right(),
+            _ => {
+                match self.intersection_count % 3 {
+                    0 => self.turn_left(),
+                    2 => self.turn_right(),
+                    _ => (),
+                }
+                self.intersection_count += 1;
+            }
+        }
+    }
+
+    fn turn_right(&mut self) {
+        (self.vx, self.vy) = (-self.vy, self.vx);
+    }
+
+    fn turn_left(&mut self) {
+        (self.vx, self.vy) = (self.vy, -self.vx);
     }
 }
 
@@ -109,7 +165,7 @@ mod tests {
             r"| | |  | v  |",
             r"\-+-/  \-+--/",
             r"  \------/   ",
-        ], "0,0"),
+        ], "7,3"),
         test_part02_01: (part02, vec![
             r"/->-\        ",
             r"|   |  /----\",
