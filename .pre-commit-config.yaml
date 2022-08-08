@@ -11,6 +11,7 @@ repos:
       - id: trailing-whitespace
         types: [non-executable, file, text]
         exclude_types: [markdown]
+        exclude: ^data/
       - id: mixed-line-ending
       - id: end-of-file-fixer
         types: [non-executable, file, text]
