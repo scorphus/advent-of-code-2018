@@ -102,10 +102,31 @@ impl Day {
     }
 
     fn part02(&mut self) -> Location {
-        for cart in &self.carts {
-            println!("{},{},{},{}", cart.x, cart.y, cart.vx, cart.vy);
+        loop {
+            let mut new_carts = BinaryHeap::new();
+            while let Some(mut cart) = self.carts.pop() {
+                if !self.occupied.contains(&(cart.x, cart.y)) {
+                    continue;
+                }
+                self.occupied.remove(&(cart.x, cart.y));
+                cart.step();
+                if self.occupied.is_empty() {
+                    return (cart.x, cart.y);
+                }
+                let track_section = self.tracks.get(&(cart.x, cart.y)).expect("❌");
+                match track_section {
+                    '|' | '-' => (),
+                    &track_section => cart.turn(track_section),
+                }
+                if self.occupied.contains(&(cart.x, cart.y)) {
+                    self.occupied.remove(&(cart.x, cart.y));
+                    continue;
+                }
+                self.occupied.insert((cart.x, cart.y));
+                new_carts.push(cart);
+            }
+            self.carts = new_carts;
         }
-        (0, 0)
     }
 }
 
@@ -167,12 +188,13 @@ mod tests {
             r"  \------/   ",
         ], "7,3"),
         test_part02_01: (part02, vec![
-            r"/->-\        ",
-            r"|   |  /----\",
-            r"| /-+--+-\  |",
-            r"| | |  | v  |",
-            r"\-+-/  \-+--/",
-            r"  \------/   ",
-        ], "0,0"),
+            r"/>-<\  ",
+            r"|   |  ",
+            r"| /<+-\",
+            r"| | | v",
+            r"\>+</ |",
+            r"  |   ^",
+            r"  \<->/",
+        ], "6,4"),
     }
 }
