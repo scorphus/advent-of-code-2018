@@ -35,42 +35,39 @@ impl Day {
     }
 
     fn part01(&mut self) -> Vec<usize> {
-        let mut recipes = vec![3, 7];
-        let (mut elf1, mut elf2) = (0, 1);
-        while recipes.len() < self.target_len {
-            let new_recipe = recipes[elf1] + recipes[elf2];
-            if new_recipe >= 10 {
-                recipes.push(new_recipe / 10);
-            }
-            recipes.push(new_recipe % 10);
-            elf1 = (elf1 + 1 + recipes[elf1]) % recipes.len();
-            elf2 = (elf2 + 1 + recipes[elf2]) % recipes.len();
-        }
-        recipes[(self.target_len - 10)..self.target_len].to_vec()
+        self.create_new_recipes_until(|s, r, _| r.len() >= s.target_len)[self.target_len - 10..]
+            .to_vec()
     }
 
     fn part02(&mut self) -> usize {
+        self.create_new_recipes_until(Day::has_match).len() - self.recipes.len()
+    }
+
+    fn create_new_recipes_until<F>(&mut self, predicate: F) -> Vec<usize>
+    where
+        F: Fn(&mut Day, &Vec<usize>, usize) -> bool,
+    {
         let mut recipes = vec![3, 7];
         let (mut elf1, mut elf2) = (0, 1);
         loop {
             let new_recipe = recipes[elf1] + recipes[elf2];
             if new_recipe >= 10 {
                 recipes.push(new_recipe / 10);
-                if self.has_match(new_recipe / 10) {
+                if predicate(self, &recipes, new_recipe / 10) {
                     break;
                 }
             }
             recipes.push(new_recipe % 10);
-            if self.has_match(new_recipe % 10) {
+            if predicate(self, &recipes, new_recipe % 10) {
                 break;
             }
             elf1 = (elf1 + 1 + recipes[elf1]) % recipes.len();
             elf2 = (elf2 + 1 + recipes[elf2]) % recipes.len();
         }
-        recipes.len() - self.recipes.len()
+        recipes
     }
 
-    fn has_match(&mut self, recipe: usize) -> bool {
+    fn has_match(&mut self, _: &Vec<usize>, recipe: usize) -> bool {
         if self.matched < self.recipes.len() && self.recipes[self.matched] == recipe {
             self.matched += 1;
             return self.matched == self.recipes.len();
