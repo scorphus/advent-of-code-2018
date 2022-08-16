@@ -1,4 +1,6 @@
 #![allow(clippy::zero_prefixed_literal)]
+#![allow(unused)]
+#![feature(binary_heap_retain)]
 extern crate clipboard;
 
 use clipboard::ClipboardContext;
