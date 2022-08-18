@@ -15,11 +15,17 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> isize {
 
 #[derive(Debug, Default)]
 struct Day {
+    game: Game,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Game {
     open_squares: HashSet<Position>,
     units: HashMap<Position, Unit>,
     order: BinaryHeap<Position>,
     elves: usize,
     goblins: usize,
+    elf_attack_power: isize,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
@@ -44,20 +50,55 @@ type Unit = (char, isize);
 
 impl Day {
     fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
-        let mut day = Day::default();
+        Day {
+            game: Game::read_from(lines),
+        }
+    }
+
+    fn part01(&mut self) -> isize {
+        self.game.elf_attack_power = 3;
+        self.game.play()
+    }
+
+    fn part02(&self) -> isize {
+        let mut min_outcome = 0;
+        let mut min_power = 50;
+        let (mut power_lo, mut power_hi) = (4, min_power);
+        while power_lo < power_hi {
+            let power = (power_lo + power_hi) / 2;
+            let mut game = self.game.clone();
+            game.elf_attack_power = power;
+            let outcome = game.play();
+            if game.elves == self.game.elves {
+                power_hi = power;
+                if power < min_power {
+                    min_power = power;
+                    min_outcome = outcome;
+                }
+            } else {
+                power_lo = power + 1;
+            }
+        }
+        min_outcome
+    }
+}
+
+impl Game {
+    fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
+        let mut game = Game::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, c) in line.as_ref().chars().enumerate() {
                 if c != '#' {
-                    day.add_element(x, y, c);
-                }
-                if c == 'E' {
-                    day.elves += 1;
-                } else if c == 'G' {
-                    day.goblins += 1;
+                    game.add_element(x, y, c);
+                    if c == 'E' {
+                        game.elves += 1;
+                    } else if c == 'G' {
+                        game.goblins += 1;
+                    }
                 }
             }
         }
-        day
+        game
     }
 
     fn add_element(&mut self, x: usize, y: usize, c: char) {
@@ -73,14 +114,14 @@ impl Day {
         }
     }
 
-    fn part01(&mut self) -> isize {
+    fn play(&mut self) -> isize {
         let mut rounds = 0;
         while self.elves > 0 && self.goblins > 0 {
             let mut new_order: BinaryHeap<Position> = BinaryHeap::new();
             while !self.order.is_empty() && self.elves > 0 && self.goblins > 0 {
                 let position = self.order.pop().expect("❌");
                 let &(kind, hp) = self.units.get(&position).expect("❌");
-                if let Some((new_pos, enemy_pos, attack)) = self.play(position, kind) {
+                if let Some((new_pos, enemy_pos, attack)) = self.turn(position, kind) {
                     if attack && self.attack(enemy_pos) {
                         new_order.retain(|p| p != &enemy_pos);
                     }
@@ -101,15 +142,7 @@ impl Day {
         rounds * self.units.values().map(|(_, hp)| hp).sum::<isize>()
     }
 
-    fn part02(&self) -> isize {
-        for position in self.order.iter() {
-            let (kind, hp) = self.units[position];
-            println!("{}({}) at {:?}", kind, hp, position);
-        }
-        0
-    }
-
-    fn play(&self, position: Position, kind: char) -> Option<(Position, Position, bool)> {
+    fn turn(&self, position: Position, kind: char) -> Option<(Position, Position, bool)> {
         if let Some(enemy_pos) = self.aim(position, kind) {
             return Some((position, enemy_pos, true));
         }
@@ -184,8 +217,12 @@ impl Day {
 
     fn attack(&mut self, enemy_pos: Position) -> bool {
         if let Some(&(enemy_kind, enemy_hp)) = self.units.get(&enemy_pos) {
-            if enemy_hp > 3 {
-                self.units.insert(enemy_pos, (enemy_kind, enemy_hp - 3));
+            let mut power = 3;
+            if enemy_kind == 'G' {
+                power = self.elf_attack_power;
+            }
+            if enemy_hp > power {
+                self.units.insert(enemy_pos, (enemy_kind, enemy_hp - power));
             } else {
                 if enemy_kind == 'E' {
                     self.elves -= 1;
@@ -284,6 +321,44 @@ mod tests {
             "#..G#E#",
             "#.....#",
             "#######",
-        ], 0),
+        ], 4_988),
+        test_part02_03: (part02, vec![
+            "#######",
+            "#E..EG#",
+            "#.#G.E#",
+            "#E.##E#",
+            "#G..#.#",
+            "#..E#.#",
+            "#######",
+        ], 31_284),
+        test_part02_04: (part02, vec![
+            "#######",
+            "#E.G#.#",
+            "#.#G..#",
+            "#G.#.G#",
+            "#G..#.#",
+            "#...E.#",
+            "#######",
+        ], 3_478),
+        test_part02_05: (part02, vec![
+            "#######",
+            "#.E...#",
+            "#.#..G#",
+            "#.###.#",
+            "#E#G#G#",
+            "#...#G#",
+            "#######",
+        ], 6_474),
+        test_part02_06: (part02, vec![
+            "#########",
+            "#G......#",
+            "#.E.#...#",
+            "#..##..G#",
+            "#...##..#",
+            "#...#...#",
+            "#.G...G.#",
+            "#.....G.#",
+            "#########",
+        ], 1_140),
     }
 }
