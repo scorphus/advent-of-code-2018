@@ -3,6 +3,8 @@ extern crate text_io;
 
 use text_io::scan;
 
+const TOTAL_INSTRUCTIONS: usize = 16;
+
 pub fn part01<T: AsRef<str>>(lines: &[T]) -> isize {
     Day::read_from(lines).part01()
 }
@@ -26,7 +28,7 @@ struct Sample {
 
 type Register = [isize; 4];
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 struct Instruction {
     opcode: usize,
     a: isize,
@@ -50,7 +52,20 @@ impl Day {
     }
 
     fn part01(&self) -> isize {
-        0
+        let mut matching_samples = 0;
+        for sample in &self.samples {
+            let mut total_matching_opcodes = 0;
+            for i in 0..TOTAL_INSTRUCTIONS {
+                if run_instruction(i, sample.before, sample.instruction) == sample.after {
+                    total_matching_opcodes += 1;
+                    if total_matching_opcodes == 3 {
+                        matching_samples += 1;
+                        break;
+                    }
+                }
+            }
+        }
+        matching_samples
     }
 
     fn part02(&self) -> isize {
@@ -177,7 +192,7 @@ mod tests {
             "",
             "",
             "9 2 1 2",
-        ], 0),
+        ], 1),
         test_part02_01: (part02, vec![
             "Before: [3, 2, 1, 1]",
             "9 2 1 2",
