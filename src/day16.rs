@@ -14,6 +14,7 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> isize {
 #[derive(Debug, Default, PartialEq)]
 struct Day {
     samples: Vec<Sample>,
+    instructions: Vec<Instruction>,
 }
 
 #[derive(Debug, Default, PartialEq)]
@@ -40,6 +41,10 @@ impl Day {
             samples: lines[..split_index]
                 .chunks(4)
                 .map(|l| parse_sample(l))
+                .collect(),
+            instructions: lines[split_index + 3..]
+                .iter()
+                .map(|l| parse_instruction(l.as_ref()))
                 .collect(),
         }
     }
@@ -74,6 +79,12 @@ fn parse_sample<T: AsRef<str>>(slice: &[T]) -> Sample {
     s
 }
 
+fn parse_instruction(line: &str) -> Instruction {
+    let mut instruction = Instruction::default();
+    scan!(line.bytes() => "{} {} {} {}", instruction.opcode, instruction.a, instruction.b, instruction.c);
+    instruction
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -87,6 +98,9 @@ mod tests {
                 "After:  [3, 2, 2, 1]",
                 "",
                 "",
+                "",
+                "9 2 1 2",
+                "9 3 2 1",
             ]),
             Day {
                 samples: vec![Sample {
@@ -99,6 +113,20 @@ mod tests {
                     },
                     after: [3, 2, 2, 1],
                 }],
+                instructions: vec![
+                    Instruction {
+                        opcode: 9,
+                        a: 2,
+                        b: 1,
+                        c: 2,
+                    },
+                    Instruction {
+                        opcode: 9,
+                        a: 3,
+                        b: 2,
+                        c: 1,
+                    },
+                ],
             },
         );
     }
@@ -122,6 +150,8 @@ mod tests {
             "After:  [3, 2, 2, 1]",
             "",
             "",
+            "",
+            "9 2 1 2",
         ], 0),
         test_part02_01: (part02, vec![
             "Before: [3, 2, 1, 1]",
@@ -129,6 +159,8 @@ mod tests {
             "After:  [3, 2, 2, 1]",
             "",
             "",
+            "",
+            "9 2 1 2",
         ], 0),
     }
 
@@ -159,6 +191,19 @@ mod tests {
                     c: 2,
                 },
                 after: [3, 2, 2, 1],
+            },
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction() {
+        assert_eq!(
+            parse_instruction("9 2 1 2"),
+            Instruction {
+                opcode: 9,
+                a: 2,
+                b: 1,
+                c: 2,
             },
         );
     }
