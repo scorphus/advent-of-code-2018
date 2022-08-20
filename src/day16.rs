@@ -85,6 +85,31 @@ fn parse_instruction(line: &str) -> Instruction {
     instruction
 }
 
+#[rustfmt::skip]
+fn run_instruction(i: usize, mut register: Register, instr: Instruction) -> Register {
+    let (a, b, c) = (instr.a, instr.b, instr.c);
+    register[c] = match (i, a as usize, b as usize) {
+        ( 0, ai, bi) => register[ai] + register[bi],                      // addr
+        ( 1, ai,  _) => register[ai] + b,                                 // addi
+        ( 2, ai, bi) => register[ai] * register[bi],                      // mulr
+        ( 3, ai,  _) => register[ai] * b,                                 // muli
+        ( 4, ai, bi) => register[ai] & register[bi],                      // banr
+        ( 5, ai,  _) => register[ai] & b,                                 // bani
+        ( 6, ai, bi) => register[ai] | register[bi],                      // borr
+        ( 7, ai,  _) => register[ai] | b,                                 // bori
+        ( 8, ai,  _) => register[ai],                                     // setr
+        ( 9,  _,  _) => a,                                                // seti
+        (10,  _, bi) => if a > register[bi]             { 1 } else { 0 }, // gtir
+        (11, ai,  _) => if register[ai] > b             { 1 } else { 0 }, // gtri
+        (12, ai, bi) => if register[ai] > register[bi]  { 1 } else { 0 }, // gtrr
+        (13,  _, bi) => if a == register[bi]            { 1 } else { 0 }, // eqir
+        (14, ai,  _) => if register[ai] == b            { 1 } else { 0 }, // eqri
+        (15, ai, bi) => if register[ai] == register[bi] { 1 } else { 0 }, // eqrr
+        ( _,  _,  _) => 0,
+    };
+    register
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -206,5 +231,44 @@ mod tests {
                 c: 2,
             },
         );
+    }
+
+    macro_rules! test_run_instruction {
+        ($($name:ident: $values:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let (i, expected) = $values;
+                    assert_eq!(
+                        run_instruction(i, [3, 2, 1, 1], Instruction {
+                            opcode: 9,
+                            a: 2,
+                            b: 1,
+                            c: 2,
+                        }),
+                        expected,
+                    );
+                }
+            )*
+        }
+    }
+
+    test_run_instruction! {
+        test_run_instruction_00: (0, [3, 2, 3, 1]),
+        test_run_instruction_01: (1, [3, 2, 2, 1]),
+        test_run_instruction_02: (2, [3, 2, 2, 1]),
+        test_run_instruction_03: (3, [3, 2, 1, 1]),
+        test_run_instruction_04: (4, [3, 2, 0, 1]),
+        test_run_instruction_05: (5, [3, 2, 1, 1]),
+        test_run_instruction_06: (6, [3, 2, 3, 1]),
+        test_run_instruction_07: (7, [3, 2, 1, 1]),
+        test_run_instruction_08: (8, [3, 2, 1, 1]),
+        test_run_instruction_09: (9, [3, 2, 2, 1]),
+        test_run_instruction_10: (10, [3, 2, 0, 1]),
+        test_run_instruction_11: (11, [3, 2, 0, 1]),
+        test_run_instruction_12: (12, [3, 2, 0, 1]),
+        test_run_instruction_13: (13, [3, 2, 1, 1]),
+        test_run_instruction_14: (14, [3, 2, 1, 1]),
+        test_run_instruction_15: (15, [3, 2, 0, 1]),
     }
 }
