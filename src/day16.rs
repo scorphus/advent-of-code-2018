@@ -1,6 +1,7 @@
 /// Day 16 (https://adventofcode.com/2018/day/16)
 extern crate text_io;
 
+use std::collections::HashMap;
 use text_io::scan;
 
 const TOTAL_INSTRUCTIONS: usize = 16;
@@ -69,7 +70,34 @@ impl Day {
     }
 
     fn part02(&self) -> isize {
-        0
+        let mut sample_to_opcode = HashMap::new();
+        let mut opcode_to_sample = HashMap::new();
+        for sample in &self.samples {
+            if sample_to_opcode.contains_key(&sample.instruction.opcode) {
+                continue;
+            }
+            let mut matching_opcode = 0;
+            let mut total_matching_opcodes = 0;
+            for i in 0..TOTAL_INSTRUCTIONS {
+                if opcode_to_sample.contains_key(&i) {
+                    continue;
+                }
+                if run_instruction(i, sample.before, sample.instruction) == sample.after {
+                    matching_opcode = i;
+                    total_matching_opcodes += 1;
+                }
+            }
+            if total_matching_opcodes == 1 {
+                sample_to_opcode.insert(sample.instruction.opcode, matching_opcode);
+                opcode_to_sample.insert(matching_opcode, sample.instruction.opcode);
+            }
+        }
+        let mut register = [0; 4];
+        for instruction in &self.instructions {
+            let opcode = sample_to_opcode[&instruction.opcode];
+            register = run_instruction(opcode, register, *instruction);
+        }
+        register[0]
     }
 }
 
@@ -193,15 +221,6 @@ mod tests {
             "",
             "9 2 1 2",
         ], 1),
-        test_part02_01: (part02, vec![
-            "Before: [3, 2, 1, 1]",
-            "9 2 1 2",
-            "After:  [3, 2, 2, 1]",
-            "",
-            "",
-            "",
-            "9 2 1 2",
-        ], 0),
     }
 
     #[test]
