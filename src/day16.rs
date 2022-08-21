@@ -221,6 +221,8 @@ mod tests {
             "",
             "9 2 1 2",
         ], 1),
+        test_part01_02: (part01, crate::input::read_lines_from_input("data/day16"), 570),
+        test_part02_01: (part02, crate::input::read_lines_from_input("data/day16"), 503),
     }
 
     #[test]
