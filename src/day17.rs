@@ -60,8 +60,12 @@ impl Day {
             .count()
     }
 
-    fn part02(&self) -> usize {
-        0
+    fn part02(&mut self) -> usize {
+        self.drain(500, 0);
+        self.ground
+            .iter()
+            .filter(|(&(_, y), &c)| self.min_y <= y && y <= self.max_y && c == '~')
+            .count()
     }
 
     fn drain(&mut self, x: usize, y: usize) {
@@ -141,6 +145,6 @@ mod tests {
             "x=498, y=10..13",
             "x=504, y=10..13",
             "y=13, x=498..504",
-        ], 0),
+        ], 29),
     }
 }
