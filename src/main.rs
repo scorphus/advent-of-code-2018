@@ -25,6 +25,7 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
+mod day18;
 
 mod input;
 
@@ -44,7 +45,7 @@ fn solve_day(day_part: &str) {
             _ => panic!("🤷"),
         }
     })}
-    let answer = get_answer!(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17);
+    let answer = get_answer!(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18);
     copy_to_clipboard(&answer);
     println!("Your answer is: {} (already copied to clipboard)", answer)
 }
