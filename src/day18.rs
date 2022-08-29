@@ -21,39 +21,63 @@ pub fn part02<T: AsRef<str>>(lines: &[T]) -> usize {
 
 #[derive(Debug, Default)]
 struct Day {
+    collection: LumberCollection,
+}
+
+#[derive(Clone, Debug, Default)]
+struct LumberCollection {
     area: Vec<Vec<char>>,
     size: usize,
+    value: usize,
 }
 
 impl Day {
     fn read_from<T: AsRef<str>>(lines: &[T]) -> Self {
         Day {
-            area: lines.iter().map(|l| l.as_ref().chars().collect()).collect(),
-            size: lines.len(),
+            collection: LumberCollection {
+                area: lines.iter().map(|l| l.as_ref().chars().collect()).collect(),
+                size: lines.len(),
+                value: 0,
+            },
         }
     }
 
     fn part01(&mut self) -> usize {
         for _ in 0..10 {
-            self.tick();
+            self.collection.tick();
         }
-        let (mut wooded, mut lumberyards) = (0, 0);
-        for row in self.area.iter() {
-            for &c in row.iter() {
-                if c == '#' {
-                    lumberyards += 1;
-                } else if c == '|' {
-                    wooded += 1;
-                }
-            }
-        }
-        wooded * lumberyards
+        self.collection.value
     }
 
     fn part02(&self) -> usize {
-        0
+        let (mut tortoise, mut hare) = (self.collection.clone(), self.collection.clone());
+        let mut ticks = 0;
+        loop {
+            tortoise.tick();
+            hare.tick();
+            hare.tick();
+            ticks += 1;
+            if tortoise.value == hare.value {
+                break;
+            }
+        }
+        let mut cycle_ticks = 0;
+        loop {
+            tortoise.tick();
+            cycle_ticks += 1;
+            if tortoise.value == hare.value {
+                break;
+            }
+        }
+        let jump = (1_000_000_000 - ticks) % cycle_ticks;
+        for i in 0..jump {
+            tortoise.tick();
+        }
+        tortoise.value
     }
+}
 
+impl LumberCollection {
     fn tick(&mut self) {
         let mut acre_stats = vec![vec![(0, 0); self.size]; self.size];
         for y in 0..self.size {
@@ -75,6 +99,7 @@ impl Day {
             }
         }
         let mut new_area = vec![vec!['.'; self.size]; self.size];
+        let (mut wooded, mut lumberyards) = (0, 0);
         for y in 0..self.size {
             for x in 0..self.size {
                 new_area[y][x] = match (self.area[y][x], acre_stats[y][x]) {
@@ -84,9 +109,15 @@ impl Day {
                     ('#', (_, _)) => '.',
                     (acre, _) => acre,
                 };
+                if new_area[y][x] == '#' {
+                    lumberyards += 1;
+                } else if new_area[y][x] == '|' {
+                    wooded += 1;
+                }
             }
         }
         self.area = new_area;
+        self.value = wooded * lumberyards;
     }
 }
 
@@ -119,17 +150,6 @@ mod tests {
             "|.||||..|.",
             "...#.|..|.",
         ], 1147),
-        test_part02_01: (part02, vec![
-            ".#.#...|#.",
-            ".....#|##|",
-            ".|..|...#.",
-            "..|#.....#",
-            "#.#|||#|#|",
-            "...#.||...",
-            ".|....|...",
-            "||...#|.#|",
-            "|.||||..|.",
-            "...#.|..|.",
-        ], 0),
+        test_part02_01: (part02, crate::input::read_lines_from_input("data/day18"), 190164),
     }
 }
