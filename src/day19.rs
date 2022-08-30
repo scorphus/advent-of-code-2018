@@ -51,8 +51,18 @@ impl Day {
         self.register[0]
     }
 
-    fn part02(&self) -> isize {
-        0
+    fn part02(&mut self) -> isize {
+        self.register[0] = 1;
+        let mut ip = self.register[self.ip];
+        while ip < self.instructions.len() as isize && self.register[0] != 0 {
+            self.register[self.ip] = ip;
+            let instruction = &self.instructions[ip as usize];
+            self.register = run_instruction(instruction, self.register);
+            ip = self.register[self.ip] + 1;
+        }
+        let register_max = self.register.iter().max().expect("❌");
+        let factors = factorize(*register_max);
+        factors.iter().sum()
     }
 }
 
@@ -80,6 +90,21 @@ fn parse_instruction(string: &str) -> Instruction {
         _ => unreachable!(),
     };
     i
+}
+
+fn factorize(n: isize) -> Vec<isize> {
+    let mut factors = vec![];
+    let mut i = 1;
+    while i * i <= n {
+        if n % i == 0 {
+            factors.push(i);
+            if i != n / i {
+                factors.push(n / i);
+            }
+        }
+        i += 1;
+    }
+    factors
 }
 
 #[rustfmt::skip]
@@ -135,15 +160,19 @@ mod tests {
             "seti 9 0 5",
         ], 6),
         test_part01_02: (part01, crate::input::read_lines_from_input("data/day19"), 948),
-        test_part02_01: (part02, vec![
-            "#ip 0",
-            "seti 5 0 1",
-            "seti 6 0 2",
-            "addi 0 1 0",
-            "addr 1 2 3",
-            "setr 1 0 0",
-            "seti 8 0 4",
-            "seti 9 0 5",
-        ], 0),
+        test_part02_01: (part02, crate::input::read_lines_from_input("data/day19"), 10695960),
+    }
+
+    #[test]
+    fn test_factorize() {
+        assert_eq!(factorize(1), vec![1]);
+        assert_eq!(factorize(2), vec![1, 2]);
+        assert_eq!(factorize(3), vec![1, 3]);
+        assert_eq!(factorize(4), vec![1, 4, 2]);
+        assert_eq!(factorize(5), vec![1, 5]);
+        assert_eq!(factorize(6), vec![1, 6, 2, 3]);
+        assert_eq!(factorize(7), vec![1, 7]);
+        assert_eq!(factorize(8), vec![1, 8, 2, 4]);
+        assert_eq!(factorize(9), vec![1, 9, 3]);
     }
 }
