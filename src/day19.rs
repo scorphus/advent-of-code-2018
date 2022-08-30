@@ -40,8 +40,15 @@ impl Day {
         }
     }
 
-    fn part01(&self) -> isize {
-        0
+    fn part01(&mut self) -> isize {
+        let mut ip = self.register[self.ip];
+        while ip < self.instructions.len() as isize {
+            self.register[self.ip] = ip;
+            let instruction = &self.instructions[ip as usize];
+            self.register = run_instruction(instruction, self.register);
+            ip = self.register[self.ip] + 1;
+        }
+        self.register[0]
     }
 
     fn part02(&self) -> isize {
@@ -75,6 +82,31 @@ fn parse_instruction(string: &str) -> Instruction {
     i
 }
 
+#[rustfmt::skip]
+fn run_instruction(instruction: &Instruction, mut register: Register) -> Register {
+    let (opcode, a, b, c) = (&instruction.opcode, instruction.a, instruction.b, instruction.c);
+    register[c] = match (opcode, a as usize, b as usize) {
+        ( 0, ai, bi) => register[ai] + register[bi],                      // addr
+        ( 1, ai,  _) => register[ai] + b,                                 // addi
+        ( 2, ai, bi) => register[ai] * register[bi],                      // mulr
+        ( 3, ai,  _) => register[ai] * b,                                 // muli
+        ( 4, ai, bi) => register[ai] & register[bi],                      // banr
+        ( 5, ai,  _) => register[ai] & b,                                 // bani
+        ( 6, ai, bi) => register[ai] | register[bi],                      // borr
+        ( 7, ai,  _) => register[ai] | b,                                 // bori
+        ( 8, ai,  _) => register[ai],                                     // setr
+        ( 9,  _,  _) => a,                                                // seti
+        (10,  _, bi) => if a > register[bi]             { 1 } else { 0 }, // gtir
+        (11, ai,  _) => if register[ai] > b             { 1 } else { 0 }, // gtri
+        (12, ai, bi) => if register[ai] > register[bi]  { 1 } else { 0 }, // gtrr
+        (13,  _, bi) => if a == register[bi]            { 1 } else { 0 }, // eqir
+        (14, ai,  _) => if register[ai] == b            { 1 } else { 0 }, // eqri
+        (15, ai, bi) => if register[ai] == register[bi] { 1 } else { 0 }, // eqrr
+        _ => unreachable!(),
+    };
+    register
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -101,7 +133,8 @@ mod tests {
             "setr 1 0 0",
             "seti 8 0 4",
             "seti 9 0 5",
-        ], 0),
+        ], 6),
+        test_part01_02: (part01, crate::input::read_lines_from_input("data/day19"), 948),
         test_part02_01: (part02, vec![
             "#ip 0",
             "seti 5 0 1",
